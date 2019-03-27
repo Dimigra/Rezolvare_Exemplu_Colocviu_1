@@ -61,6 +61,17 @@
             android:layout_alignLeft="@+id/text2"
             android:layout_alignRight="@+id/text2"
             android:text="Button2" />
+
+        <EditText
+            android:id="@+id/textDebug"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/button1"
+            android:ems="8"
+            android:enabled="false"
+            android:inputType="number"
+            android:text="0"
+            android:layout_centerHorizontal="true"/>
     </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>

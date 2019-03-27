@@ -1,6 +1,9 @@
 package ro.pub.cs.systems.eim.practicaltest01;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -12,12 +15,28 @@ public class PracticalTest01MainActivity extends AppCompatActivity {
 
     EditText text1 = null;
     EditText text2 = null;
+    EditText textDebug = null;
 
     Button button0 = null;
     Button button1 = null;
     Button button2 = null;
 
+    /* [C] */
     private final static int secondActivityCode = 1;
+
+    /* [D1] */
+    private boolean serviceRunning = false;
+    private final static int NUMBER_OF_CLICKS_THRESHOLD = 10;
+
+    /* [D2] */
+    private IntentFilter startedServiceIntentFilter;
+    private StartedServiceBroadcastReceiver startedServiceBroadcastReceiver;
+    private class StartedServiceBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            textDebug.setText(intent.getStringExtra("message"));
+        }
+    }
 
     /* [B1] Button Listener */
     private my_ButtonClickListener my_buttonClickListener = new my_ButtonClickListener();
@@ -43,6 +62,15 @@ public class PracticalTest01MainActivity extends AppCompatActivity {
                     text2.setText(String.valueOf(value2));
                     break;
             }
+
+            /* [D1] Call service */
+            if (value1 + value2 > NUMBER_OF_CLICKS_THRESHOLD && serviceRunning == false) {
+                Intent intent = new Intent(getApplicationContext(), PracticalTest01Service.class);
+                intent.putExtra("val1", value1);
+                intent.putExtra("val2", value2);
+                getApplicationContext().startService(intent);
+                serviceRunning = true;
+            }
         }
     }
 
@@ -53,6 +81,7 @@ public class PracticalTest01MainActivity extends AppCompatActivity {
 
         text1 = (EditText)findViewById(R.id.text1);
         text2 = (EditText)findViewById(R.id.text2);
+        textDebug = (EditText)findViewById(R.id.textDebug);
 
         button0 = (Button)findViewById(R.id.button0);
         button1 = (Button)findViewById(R.id.button1);
@@ -62,6 +91,13 @@ public class PracticalTest01MainActivity extends AppCompatActivity {
         button0.setOnClickListener(my_buttonClickListener);
         button1.setOnClickListener(my_buttonClickListener);
         button2.setOnClickListener(my_buttonClickListener);
+
+        /* [D2] Filters for receiving broadcast */
+        startedServiceBroadcastReceiver = new StartedServiceBroadcastReceiver();
+        startedServiceIntentFilter = new IntentFilter();
+        startedServiceIntentFilter.addAction(String.valueOf(0));
+        startedServiceIntentFilter.addAction(String.valueOf(1));
+        startedServiceIntentFilter.addAction(String.valueOf(2));
     }
 
     /* [B2] Save text */
@@ -93,5 +129,27 @@ public class PracticalTest01MainActivity extends AppCompatActivity {
         if (requestCode == secondActivityCode) {
             Toast.makeText(this, "The activity returned with result " + resultCode, Toast.LENGTH_LONG).show();
         }
+    }
+
+    /* [D1] Close service */
+    @Override
+    protected void onDestroy() {
+        Intent intent = new Intent(this, PracticalTest01Service.class);
+        stopService(intent);
+        super.onDestroy();
+    }
+
+    /* [D2] */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(startedServiceBroadcastReceiver, startedServiceIntentFilter);
+    }
+
+    /* [D2] */
+    @Override
+    protected void onPause() {
+        unregisterReceiver(startedServiceBroadcastReceiver);
+        super.onPause();
     }
 }
