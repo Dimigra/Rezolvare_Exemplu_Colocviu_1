@@ -41,6 +41,7 @@ public class PracticalTest01MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
         setContentView(R.layout.activity_practical_test01_main);
 
         text1 = (EditText)findViewById(R.id.text1);
@@ -60,6 +61,7 @@ public class PracticalTest01MainActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
+
         savedInstanceState.putString(String.valueOf(R.id.text1), text1.getText().toString());
         savedInstanceState.putString(String.valueOf(R.id.text2), text2.getText().toString());
     }
@@ -68,6 +70,7 @@ public class PracticalTest01MainActivity extends AppCompatActivity {
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+
         if (savedInstanceState.containsKey(String.valueOf(R.id.text1))) {
             text1.setText(savedInstanceState.getString(String.valueOf(R.id.text1)));
         }
