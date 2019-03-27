@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class PracticalTest01MainActivity extends AppCompatActivity {
 
@@ -16,6 +17,8 @@ public class PracticalTest01MainActivity extends AppCompatActivity {
     Button button1 = null;
     Button button2 = null;
 
+    private final static int secondActivityCode = 1;
+
     /* [B1] Button Listener */
     private my_ButtonClickListener my_buttonClickListener = new my_ButtonClickListener();
     private class my_ButtonClickListener implements Button.OnClickListener {
@@ -25,6 +28,11 @@ public class PracticalTest01MainActivity extends AppCompatActivity {
             int value2 = Integer.parseInt(text2.getText().toString());
             switch (view.getId()) {
                 case R.id.button0:
+                    /* [C1] Start Second Activity */
+                    Intent intent = new Intent(getApplicationContext(), PracticalTest01SecondaryActivity.class);
+                    intent.putExtra("value1", value1);
+                    intent.putExtra("value2", value2);
+                    startActivityForResult(intent, secondActivityCode);
                     break;
                 case R.id.button1:
                     value1++;
@@ -41,7 +49,6 @@ public class PracticalTest01MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
         setContentView(R.layout.activity_practical_test01_main);
 
         text1 = (EditText)findViewById(R.id.text1);
@@ -76,6 +83,15 @@ public class PracticalTest01MainActivity extends AppCompatActivity {
         }
         if (savedInstanceState.containsKey(String.valueOf(R.id.text2))) {
             text2.setText(savedInstanceState.getString(String.valueOf(R.id.text2)));
+        }
+    }
+
+    /* [C1] Get Second Activity result */
+    /* [ACTIVITY] Print the result of the child activity */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (requestCode == secondActivityCode) {
+            Toast.makeText(this, "The activity returned with result " + resultCode, Toast.LENGTH_LONG).show();
         }
     }
 }
